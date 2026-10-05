@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.telegram.electric'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.telegram.electric'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName 'Alpha-1.0'
+    }
+}
