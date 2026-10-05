@@ -4,15 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupManager {
-    private final List<String> targetGroups = new ArrayList<>();
+    private final List<Long> joinedGroups = new ArrayList<>();
+    private long selectedTarget;
 
-    public void addTargetGroup(String groupId) {
-        if (!targetGroups.contains(groupId)) {
-            targetGroups.add(groupId);
+    public void addJoinedGroup(long id) {
+        if (!joinedGroups.contains(id)) {
+            joinedGroups.add(id);
         }
     }
 
-    public List<String> getTargetGroups() {
-        return targetGroups;
+    public List<Long> getJoinedGroups() {
+        return joinedGroups;
+    }
+
+    public void selectTarget(long id) {
+        selectedTarget = id;
+    }
+
+    public long getTarget() {
+        return selectedTarget;
     }
 }
