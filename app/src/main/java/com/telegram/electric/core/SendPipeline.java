@@ -10,10 +10,10 @@ public class SendPipeline {
     }
 
     public void prepareElectricMessage() {
-        sendEngine.enqueue(composer.composeElectricMessage());
+        sendEngine.addMessage(composer.compose("Electric Message"));
     }
 
     public String nextMessage() {
-        return sendEngine.next();
+        return sendEngine.nextMessage();
     }
 }
