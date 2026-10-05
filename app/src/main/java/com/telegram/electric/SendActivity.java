@@ -19,7 +19,7 @@ public class SendActivity extends Activity {
         Button send = findViewById(R.id.sendButton);
 
         send.setOnClickListener(v -> {
-            sender.sendMessage(0L, message.getText().toString());
+            sender.sendMessage("0", message.getText().toString());
         });
     }
 }
