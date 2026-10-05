@@ -6,31 +6,41 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 
+import com.telegram.electric.core.CoreEngine;
+
 public class MainActivity extends Activity {
-    private CoreController coreController;
+    private CoreEngine engine;
     private TextView status;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        coreController = new CoreController();
+        engine = new CoreEngine();
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         status = new TextView(this);
-        status.setText("Core Offline");
+        status.setText("Engine Offline");
 
         Button start = new Button(this);
-        start.setText("START CORE");
+        start.setText("START ENGINE");
         start.setOnClickListener(v -> {
-            coreController.startCore();
-            status.setText("Core Running");
+            engine.start();
+            status.setText("Engine Running");
+        });
+
+        Button stop = new Button(this);
+        stop.setText("STOP ENGINE");
+        stop.setOnClickListener(v -> {
+            engine.stop();
+            status.setText("Engine Offline");
         });
 
         layout.addView(status);
         layout.addView(start);
+        layout.addView(stop);
         setContentView(layout);
     }
 }
