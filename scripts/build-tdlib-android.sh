@@ -16,10 +16,6 @@ if ! command -v unzip >/dev/null 2>&1; then
   exit 1
 fi
 
-TDLIB_CONTEXT="https://github.com/tdlib/td.git#"
-TDLIB_CONTEXT+="$TDLIB_COMMIT"
-TDLIB_CONTEXT+=":example/android"
-
 echo "Building TDLib commit $TDLIB_COMMIT for Android (JSONJava interface)."
 docker buildx build \
   --platform linux/amd64 \
@@ -27,8 +23,11 @@ docker buildx build \
   --build-arg "ANDROID_NDK_VERSION=28.2.13676358" \
   --build-arg "OPENSSL_VERSION=openssl-3.6.5" \
   --build-arg "TDLIB_INTERFACE=JSONJava" \
+  --build-arg "ANDROID_API_LEVEL=26" \
+  --build-arg "ANDROID_ABIS=arm64-v8a armeabi-v7a x86_64 x86" \
+  --file "$SCRIPT_DIR/tdlib-android.Dockerfile" \
   --output "type=local,dest=$BUILD_DIR/output" \
-  "$TDLIB_CONTEXT"
+  "$ROOT_DIR"
 
 unzip -q "$BUILD_DIR/output/tdlib.zip" -d "$BUILD_DIR/unpacked"
 for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
