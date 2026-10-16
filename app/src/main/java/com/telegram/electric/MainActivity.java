@@ -2,59 +2,37 @@ package com.telegram.electric;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.content.Intent;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.LinearLayout;
-
-import com.telegram.electric.core.CoreEngine;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    private CoreEngine engine;
-    private TextView status;
-    private TextView target;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        engine = new CoreEngine();
-
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(24, 24, 24, 24);
 
-        status = new TextView(this);
-        status.setText("Engine Offline");
+        TextView status = new TextView(this);
+        status.setText("TDLib is not connected. This build cannot log in or send messages.");
 
-        target = new TextView(this);
-        target.setText("Target Group: Not Selected");
+        TextView target = new TextView(this);
+        target.setText("Group list unavailable until TDLib chat sync is implemented.");
 
         Button selectGroup = new Button(this);
-        selectGroup.setText("SELECT TARGET GROUP");
-        selectGroup.setOnClickListener(v -> {
-            Intent intent = new Intent(this, GroupSelectionActivity.class);
-            startActivity(intent);
-        });
+        selectGroup.setText("GROUP SELECTION UNAVAILABLE");
+        selectGroup.setEnabled(false);
 
         Button start = new Button(this);
-        start.setText("START ENGINE");
-        start.setOnClickListener(v -> {
-            engine.start(0L);
-            status.setText("Engine Running");
-        });
-
-        Button stop = new Button(this);
-        stop.setText("STOP ENGINE");
-        stop.setOnClickListener(v -> {
-            engine.stop();
-            status.setText("Engine Offline");
-        });
+        start.setText("ENGINE UNAVAILABLE");
+        start.setEnabled(false);
 
         layout.addView(status);
         layout.addView(target);
         layout.addView(selectGroup);
         layout.addView(start);
-        layout.addView(stop);
         setContentView(layout);
     }
 }
