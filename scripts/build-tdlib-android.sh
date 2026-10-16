@@ -24,6 +24,8 @@ echo "Building TDLib commit $TDLIB_COMMIT for Android (JSONJava interface)."
 docker buildx build \
   --platform linux/amd64 \
   --build-arg "COMMIT_HASH=$TDLIB_COMMIT" \
+  --build-arg "ANDROID_NDK_VERSION=28.2.13676358" \
+  --build-arg "OPENSSL_VERSION=openssl-3.6.5" \
   --build-arg "TDLIB_INTERFACE=JSONJava" \
   --output "type=local,dest=$BUILD_DIR/output" \
   "$TDLIB_CONTEXT"

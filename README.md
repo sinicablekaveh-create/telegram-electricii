@@ -13,4 +13,4 @@ Install Docker with Buildx, JDK 17, and Gradle 8.9. Run:
 1. Build TDLib: ./scripts/build-tdlib-android.sh
 2. Build the APK: gradle --no-daemon assembleDebug
 
-The script builds TDLib commit a94b83d67ab4c8397c6245e541b31a4131ea2f79 and places its native libraries under app/src/main/jniLibs. GitHub Actions runs the same script and uploads a debug APK artifact. That APK is for development and is not a public release.
+The script builds TDLib commit a94b83d67ab4c8397c6245e541b31a4131ea2f79 with Android NDK 28.2.13676358 and OpenSSL 3.6.5, then places its native libraries under app/src/main/jniLibs. NDK r28 builds shared libraries aligned for Android's 16 KB page-size devices. GitHub Actions runs the same script and uploads a debug APK artifact. That APK is for development and is not a public release.
