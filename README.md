@@ -4,7 +4,7 @@ Telegram Electric is an Android app with a real TDLib connection path. CI builds
 
 The app asks for the API ID and API hash from [my.telegram.org](https://my.telegram.org), then requests the phone number and the verification code inside the app. API credentials and the TDLib database key are encrypted with Android Keystore on the device. Do not paste login codes or account passwords into source control or chat.
 
-The current alpha displays groups available to the signed-in account. It does not send messages, join chats, or collect group members. Messaging remains disabled until a separate user-confirmed send flow is implemented.
+The TDLib and OpenSSL license texts are included in app/src/main/assets/third_party. The current alpha displays groups available to the signed-in account. It does not send messages, join chats, or collect group members. Messaging remains disabled until a separate user-confirmed send flow is implemented.
 
 ## Local build
 
