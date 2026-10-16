@@ -1,39 +1,80 @@
-name: Android Build
+name: Telegram Electric Android APK CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+# CI never installs APKs or accesses device/account credentials.
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-apk-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  build:
+  build-and-verify:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 45
     steps:
-      - name: Checkout
+      - name: Checkout source without persisting credentials
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17 for Android Gradle Plugin 8.7.3
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Gradle
+      # The repository has no gradlew; use the AGP 8.7-compatible Gradle 8.9.
+      - name: Set up pinned Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-      - name: Build Debug APK
+      - name: Ensure Android SDK platform and build tools
+        shell: bash
         run: |
-          if [ -f ./gradlew ]; then
-            chmod +x ./gradlew
-            ./gradlew assembleDebug
-          else
-            gradle assembleDebug
-          fi
+          set -euo pipefail
+          manager="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          test -x "$manager"
+          printf 'y\n' | "$manager" 'platforms;android-35' 'build-tools;35.0.0'
 
-      - name: Upload APK
+      - name: Compile, run offline unit tests, lint, and build debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --max-workers=2 testDebugUnitTest lintDebug assembleDebug
+
+      - name: Verify APK identity, signature, zip alignment, and SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk='app/build/outputs/apk/debug/app-debug.apk'
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          test -s "$apk"
+          "$tools/aapt" dump badging "$apk" | tee apk-badging.txt
+          grep -Fq "package: name='com.telegram.electric'" apk-badging.txt
+          "$tools/apksigner" verify --verbose --print-certs --min-sdk-version 26 "$apk" | tee apk-signature.txt
+          "$tools/zipalign" -c -v 4 "$apk"
+          sha256sum "$apk" > apk.sha256
+          sha256sum --check apk.sha256
+
+      # PRs still build and verify; artifacts are published only from main/manual runs.
+      - name: Store verified debug APK and audit reports (no installation)
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: telegram-electric-debug
-          path: '**/build/outputs/apk/debug/*.apk'
+          name: telegram-electricii-verified-debug-apk
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            apk-badging.txt
+            apk-signature.txt
+            apk.sha256
+          if-no-files-found: error
+          retention-days: 7
