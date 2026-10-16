@@ -1,9 +1,16 @@
 # Telegram Electric
 
-Telegram Electric is an Android app scaffold. The current alpha does **not** include TDLib's Java/JNI runtime, account authorization, a live chat list, or message delivery. The UI and core guards fail closed so this build cannot report a fake connection or successful send.
+Telegram Electric is an Android app with a real TDLib connection path. CI builds the official TDLib Android JSON/JNI runtime from a pinned upstream commit, packages it into the debug APK, and the app supports Telegram authorization and group chat sync.
 
-See [the architecture notes](docs/TELEGRAM_ELECTRIC_ARCHITECTURE.md) for the connection prerequisites and the next implementation steps.
+The app asks for the API ID and API hash from [my.telegram.org](https://my.telegram.org), then requests the phone number and the verification code inside the app. API credentials and the TDLib database key are encrypted with Android Keystore on the device. Do not paste login codes or account passwords into source control or chat.
 
-## Build pipeline
+The current alpha displays groups available to the signed-in account. It does not send messages, join chats, or collect group members. Messaging remains disabled until a separate user-confirmed send flow is implemented.
 
-GitHub Actions runs the Android checks and uploads a debug APK for development. That APK is not a functioning Telegram client and is not a public release.
+## Local build
+
+Install Docker with Buildx, JDK 17, and Gradle 8.9. Run:
+
+1. Build TDLib: ./scripts/build-tdlib-android.sh
+2. Build the APK: gradle --no-daemon assembleDebug
+
+The script builds TDLib commit a94b83d67ab4c8397c6245e541b31a4131ea2f79 and places its native libraries under app/src/main/jniLibs. GitHub Actions runs the same script and uploads a debug APK artifact. That APK is for development and is not a public release.

@@ -1,26 +1,17 @@
-# Telegram Electric: current state and architecture
+# Telegram Electric: connection and safety
 
-## Current alpha status
+## Telegram connection
 
-The repository is a scaffold. It does not package TDLib's Java/JNI runtime, authenticate a Telegram account, load the account's chats, or deliver messages. The UI disables unavailable actions, and core methods fail closed rather than reporting that an engine started or a message was sent.
+- The app uses the official TDLib JSON/JNI interface. The Android build script pins upstream TDLib to commit a94b83d67ab4c8397c6245e541b31a4131ea2f79.
+- CI builds the native libraries for Android ABIs and puts them in the APK. Generated native binaries are not committed to the repository.
+- The user enters their Telegram API ID and API hash from my.telegram.org in the app. Android Keystore encrypts those values and the random TDLib database key at rest. The app does not request the login code or 2-step verification password outside the app.
+- Authorization follows TDLib update states for phone number, login code, 2-step verification password, and email verification.
+- After authorization, the app loads the signed-in account's main and archived chat lists and displays groups visible to that account. It does not join chats or scrape members.
 
-## TDLib integration prerequisites
+## Messaging safety
 
-1. Package the official TDLib Java bindings and native libraries for the Android ABIs this app supports.
-2. Provide the Telegram `api_id` and `api_hash` through local or CI configuration. Never commit credentials or a user's login code/session.
-3. Handle TDLib's asynchronous authorization states and ordered updates, including chat updates, before enabling chat selection.
-4. Build the selectable list from chats visible to the signed-in account. Do not scrape group members or join chats automatically.
-5. Before outbound messaging, show the exact selected chats and message text and require an explicit confirmation. Start with a user-controlled test chat, honor Telegram limits, and provide a reliable stop control.
+The current alpha does not send messages. The existing send screen and engine remain disabled. A later send feature must show the exact selected chats and message text and require a separate explicit confirmation before sending. It must respect Telegram limits, provide a stop control, and pause for review when delivery is uncertain.
 
-## Planned components
+## Build and verification
 
-- TDLib client lifecycle and authorization
-- Chat/update repository backed by the signed-in user's visible chats
-- Explicit target selection and message preview
-- A rate-limited, stoppable send queue with clear sent/uncertain results
-- Electric WordBank as an optional draft helper; generated text never sends automatically
-
-## Roadmap
-
-- Alpha: package and initialize TDLib, complete sign-in, and display the user's chats.
-- Beta: implement user-confirmed messaging to selected chats with limits, recovery, and tests.
+GitHub Actions runs unit tests, builds the pinned TDLib runtime, assembles a debug APK, and uploads it as a development artifact. Local Android builds must run scripts/build-tdlib-android.sh before Gradle assembles the APK.
