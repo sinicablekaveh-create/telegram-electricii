@@ -10,7 +10,7 @@ public class GroupSelectionActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         TextView view = new TextView(this);
-        view.setText("Select Target Group\nGroups will load from TDLib");
+        view.setText("TDLib is not connected. No Telegram groups were loaded.");
         setContentView(view);
     }
 }

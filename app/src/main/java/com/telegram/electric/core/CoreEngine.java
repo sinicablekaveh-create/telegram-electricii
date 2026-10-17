@@ -1,25 +1,22 @@
 package com.telegram.electric.core;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
+/**
+ * Fail-closed guard until the real TDLib runtime is packaged and initialized.
+ */
 public class CoreEngine {
-    private final AtomicBoolean running = new AtomicBoolean(false);
-    private long targetGroupId = 0;
-
     public void start(long groupId) {
-        targetGroupId = groupId;
-        running.set(true);
+        throw new IllegalStateException("TDLib is not connected; the engine cannot start.");
     }
 
     public void stop() {
-        running.set(false);
+        // There is no active engine to stop in this scaffold.
     }
 
     public boolean isRunning() {
-        return running.get();
+        return false;
     }
 
     public long getTargetGroupId() {
-        return targetGroupId;
+        return 0L;
     }
 }
