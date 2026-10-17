@@ -371,7 +371,8 @@ public final class TdClientManager {
                 throw new IllegalStateException("Could not create the private TDLib files directory.");
             }
 
-            JSONObject parameters = createRequest("tdlibParameters");
+            // TDLib 1.8.6+ expects all initialization fields directly in the request.
+            JSONObject parameters = createRequest("setTdlibParameters");
             parameters.put("use_test_dc", false);
             parameters.put("database_directory", database.getAbsolutePath());
             parameters.put("files_directory", files.getAbsolutePath());
@@ -387,12 +388,11 @@ public final class TdClientManager {
             parameters.put("system_version", Build.VERSION.RELEASE == null ? "" : Build.VERSION.RELEASE);
             parameters.put("application_version", "Alpha-1.1.0");
 
-            JSONObject request = createRequest("setTdlibParameters");
-            request.put("parameters", parameters);
+            // Do not wrap these fields inside an obsolete "parameters" object.
             parametersSubmitted = true;
             awaitingParameters = false;
             publishState(State.CONNECTING, "Connecting to Telegram.");
-            sendRequest(request);
+            sendRequest(parameters);
         } catch (Exception error) {
             publishState(State.ERROR, "Could not initialize TDLib: " + safeMessage(error));
         }
