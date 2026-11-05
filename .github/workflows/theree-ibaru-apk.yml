@@ -1,16 +1,9 @@
-name: Build theree ibaru APK
-# Runtime payload verified at 70556 base64 bytes
+name: Build theree ibaru V2 APK
 
 on:
   push:
     branches:
-      - theree-ibaru-apk-build-20261105
-    paths:
-      - 'theree-ibaru-android/**'
-      - '.github/workflows/theree-ibaru-apk.yml'
-  pull_request:
-    branches:
-      - main
+      - theree-ibaru-apk-v2
     paths:
       - 'theree-ibaru-android/**'
       - '.github/workflows/theree-ibaru-apk.yml'
@@ -56,11 +49,11 @@ jobs:
           echo "d4ed93c1245241251f26216d72e369e4785d1ea2475153c3642cb239ed88f9f7  /tmp/runtime_v09.zip" | sha256sum -c -
           unzip -t /tmp/runtime_v09.zip
 
-      - name: Build signed release APK
+      - name: Build signed V2 release APK
         working-directory: theree-ibaru-android
         run: gradle --no-daemon :app:assembleRelease
 
-      - name: Verify APK
+      - name: Verify V2 APK
         working-directory: theree-ibaru-android
         run: |
           set -euo pipefail
@@ -68,18 +61,19 @@ jobs:
           test -f "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -F "package: name='com.sinicablekaveh.thereeibaru'" /tmp/badging.txt
-          grep -F "versionName='1.1'" /tmp/badging.txt
+          grep -F "package: name='com.sinicablekaveh.thereeibaru.v2'" /tmp/badging.txt
+          grep -F "versionName='2.0'" /tmp/badging.txt
+          grep -F "targetSdkVersion:'35'" /tmp/badging.txt
           unzip -l "$APK" | grep -F 'classes.dex'
           unzip -l "$APK" | grep -F 'assets/runtime_v09.b64'
           mkdir -p dist
-          cp "$APK" dist/theree_ibaru_v1.1.apk
-          sha256sum dist/theree_ibaru_v1.1.apk > dist/SHA256SUMS.txt
+          cp "$APK" dist/theree_ibaru_v2.0.apk
+          sha256sum dist/theree_ibaru_v2.0.apk > dist/SHA256SUMS.txt
 
-      - name: Upload APK artifact
+      - name: Upload V2 APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: theree-ibaru-v1.1-apk
+          name: theree-ibaru-v2-apk
           path: theree-ibaru-android/dist/
           if-no-files-found: error
           retention-days: 30
