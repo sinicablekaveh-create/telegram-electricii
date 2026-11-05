@@ -1,4 +1,5 @@
 name: Build theree ibaru APK
+# Runtime payload verified at 70556 base64 bytes
 
 on:
   push:
