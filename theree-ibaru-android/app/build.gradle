@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.sinicablekaveh.thereeibaru'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.sinicablekaveh.thereeibaru'
+        minSdk 26
+        targetSdk 28
+        versionCode 11
+        versionName '1.1'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+    }
+}
