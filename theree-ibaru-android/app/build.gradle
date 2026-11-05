@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.sinicablekaveh.thereeibaru'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
-        applicationId 'com.sinicablekaveh.thereeibaru.v2'
+        applicationId 'com.sinicablekaveh.thereeibaru.v3'
         minSdk 26
-        targetSdk 35
-        versionCode 20
-        versionName '2.0'
+        targetSdk 36
+        versionCode 30
+        versionName '3.0'
     }
 
     buildTypes {
