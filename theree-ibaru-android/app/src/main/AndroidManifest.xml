@@ -9,9 +9,14 @@
 
     <application
         android:allowBackup="true"
-        android:label="theree ibaru"
+        android:label="theree ibaru V2"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="true">
+
+        <service
+            android:name=".TermuxResultService"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
