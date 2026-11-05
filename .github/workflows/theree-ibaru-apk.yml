@@ -1,0 +1,78 @@
+name: Build theree ibaru APK
+
+on:
+  push:
+    branches:
+      - theree-ibaru-apk-build-20261105
+    paths:
+      - 'theree-ibaru-android/**'
+      - '.github/workflows/theree-ibaru-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK packages
+        run: yes | sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Assemble and verify embedded Runtime
+        working-directory: theree-ibaru-android
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/assets
+          cat runtime-parts/part* | tr -d '\r\n' > app/src/main/assets/runtime_v09.b64
+          BYTES="$(wc -c < app/src/main/assets/runtime_v09.b64 | tr -d ' ')"
+          echo "Runtime Base64 bytes: $BYTES"
+          test "$BYTES" -eq 70556
+          base64 -d app/src/main/assets/runtime_v09.b64 > /tmp/runtime_v09.zip
+          echo "d4ed93c1245241251f26216d72e369e4785d1ea2475153c3642cb239ed88f9f7  /tmp/runtime_v09.zip" | sha256sum -c -
+          unzip -t /tmp/runtime_v09.zip
+
+      - name: Build signed release APK
+        working-directory: theree-ibaru-android
+        run: gradle --no-daemon :app:assembleRelease
+
+      - name: Verify APK
+        working-directory: theree-ibaru-android
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -f "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -F "package: name='com.sinicablekaveh.thereeibaru'" /tmp/badging.txt
+          grep -F "versionName='1.1'" /tmp/badging.txt
+          unzip -l "$APK" | grep -F 'classes.dex'
+          unzip -l "$APK" | grep -F 'assets/runtime_v09.b64'
+          mkdir -p dist
+          cp "$APK" dist/theree_ibaru_v1.1.apk
+          sha256sum dist/theree_ibaru_v1.1.apk > dist/SHA256SUMS.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: theree-ibaru-v1.1-apk
+          path: theree-ibaru-android/dist/
+          if-no-files-found: error
+          retention-days: 30
