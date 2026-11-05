@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.rgb(245, 247, 250));
 
         TextView title = new TextView(this);
-        title.setText("theree ibaru V2");
+        title.setText("theree ibaru V3");
         title.setTextSize(23f);
         title.setTextColor(Color.rgb(22, 48, 82));
         title.setGravity(Gravity.CENTER_VERTICAL);
@@ -270,7 +270,7 @@ public class MainActivity extends Activity {
             if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
                 status.setText("RUN_COMMAND permission granted. Press CHECK SYSTEM.");
             } else {
-                status.setText("RUN_COMMAND permission denied. V2 cannot control Termux.");
+                status.setText("RUN_COMMAND permission denied. V3 cannot control Termux.");
             }
         }
     }
@@ -411,7 +411,7 @@ public class MainActivity extends Activity {
                 "bash scripts/verify_install.sh; " +
                 "echo SYSTEM_OK";
 
-        runTermuxWithResult("system", "V2 system check", command, null, true, false);
+        runTermuxWithResult("system", "V3 system check", command, null, true, false);
     }
 
     private void installRuntime() {
@@ -439,10 +439,10 @@ public class MainActivity extends Activity {
                     "cd \"$HOME/theree_ibaru_source\"; " +
                     "bash install.sh; " +
                     "bash scripts/verify_install.sh; " +
-                    "echo V2_INSTALL_OK";
+                    "echo V3_INSTALL_OK";
 
             status.setText("Installing Runtime. This downloads Debian/Python/Bun dependencies once.");
-            runTermuxWithResult("install", "Install theree ibaru V2 Runtime", command, payload, true, false);
+            runTermuxWithResult("install", "Install theree ibaru V3 Runtime", command, payload, true, false);
         } catch (Exception e) {
             showError("Runtime asset error", e);
         }
@@ -453,7 +453,7 @@ public class MainActivity extends Activity {
                 "cd \"$HOME/theree_ibaru_source\" 2>/dev/null || { echo 'Runtime not installed'; exit 2; }; " +
                 "mkdir -p data/logs; " +
                 "if ! curl -fsS --max-time 2 http://127.0.0.1:8765/api/status >/dev/null 2>&1; then " +
-                "nohup bash scripts/start_panel.sh >> data/logs/v2-panel.log 2>&1 </dev/null & " +
+                "nohup bash scripts/start_panel.sh >> data/logs/v3-panel.log 2>&1 </dev/null & " +
                 "for i in $(seq 1 30); do " +
                 "curl -fsS --max-time 2 http://127.0.0.1:8765/api/status >/dev/null 2>&1 && break; " +
                 "sleep 1; done; fi; " +
@@ -468,17 +468,17 @@ public class MainActivity extends Activity {
                 "set -euo pipefail; " +
                 "cd \"$HOME/theree_ibaru_source\" 2>/dev/null || { echo 'Runtime not installed'; exit 2; }; " +
                 "bash scripts/verify_install.sh; " +
-                "bash scripts/start_eitaabun.sh >/tmp/theree_v2_eitaa.log 2>&1 || true; " +
+                "bash scripts/start_eitaabun.sh >/tmp/theree_v3_eitaa.log 2>&1 || true; " +
                 ensurePanelShell() +
                 "curl -fsS -X POST http://127.0.0.1:8765/preflight >/dev/null; " +
                 "sleep 1; " +
                 "STATUS_JSON=$(curl -fsS --max-time 5 http://127.0.0.1:8765/api/status); " +
                 "echo \"$STATUS_JSON\"; " +
                 "echo \"$STATUS_JSON\" | grep -Eq '\"last_preflight_ok\"[[:space:]]*:[[:space:]]*true'; " +
-                "echo V2_PREFLIGHT_OK";
+                "echo V3_PREFLIGHT_OK";
 
         status.setText("Running live account Preflight...");
-        runTermuxWithResult("preflight", "V2 live Preflight", command, null, true, false);
+        runTermuxWithResult("preflight", "V3 live Preflight", command, null, true, false);
     }
 
     private void startScheduler() {
@@ -497,7 +497,7 @@ public class MainActivity extends Activity {
                 "echo \"$STATUS_JSON\"; " +
                 "echo \"$STATUS_JSON\" | grep -Eq '\"last_preflight_ok\"[[:space:]]*:[[:space:]]*true'; " +
                 "echo \"$STATUS_JSON\" | grep -Eq '\"running\"[[:space:]]*:[[:space:]]*true'; " +
-                "echo V2_START_OK";
+                "echo V3_START_OK";
 
         prefs.edit().putBoolean("running_ok", false).apply();
         runTermuxWithResult("start", "Start theree ibaru scheduler", command, null, true, false);
@@ -514,7 +514,7 @@ public class MainActivity extends Activity {
                 "STATUS_JSON=$(curl -fsS --max-time 5 http://127.0.0.1:8765/api/status); " +
                 "echo \"$STATUS_JSON\"; " +
                 "echo \"$STATUS_JSON\" | grep -Eq '\"running\"[[:space:]]*:[[:space:]]*false'; " +
-                "fi; echo V2_STOP_OK";
+                "fi; echo V3_STOP_OK";
 
         runTermuxWithResult("stop", "Stop theree ibaru scheduler", command, null, true, false);
     }
@@ -545,7 +545,7 @@ public class MainActivity extends Activity {
                     String command =
                             "cd \"$HOME/theree_ibaru_source\" 2>/dev/null || { echo 'Runtime not installed'; read -r _; exit 2; }; " +
                             "bash " + script + " --phone " + shellQuote(phone) +
-                            "; echo; echo 'Login finished. Return to theree ibaru V2 and run PREFLIGHT.'; read -r _";
+                            "; echo; echo 'Login finished. Return to theree ibaru V3 and run PREFLIGHT.'; read -r _";
 
                     prefs.edit().putBoolean("preflight_ok", false).apply();
                     runTermuxNoResult(service + " login", command, false, true);
