@@ -13,8 +13,8 @@
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <receiver
-            android:name=".TermuxResultReceiver"
+        <service
+            android:name=".TermuxResultService"
             android:exported="false" />
 
         <activity
