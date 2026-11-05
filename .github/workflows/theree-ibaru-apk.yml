@@ -8,6 +8,12 @@ on:
     paths:
       - 'theree-ibaru-android/**'
       - '.github/workflows/theree-ibaru-apk.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'theree-ibaru-android/**'
+      - '.github/workflows/theree-ibaru-apk.yml'
   workflow_dispatch:
 
 permissions:
