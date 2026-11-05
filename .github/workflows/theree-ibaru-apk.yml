@@ -1,9 +1,9 @@
-name: Build theree ibaru V2 APK
+name: Build theree ibaru V3 APK
 
 on:
   push:
     branches:
-      - theree-ibaru-apk-v2
+      - theree-ibaru-apk-v3
     paths:
       - 'theree-ibaru-android/**'
       - '.github/workflows/theree-ibaru-apk.yml'
@@ -28,15 +28,15 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Install Android SDK packages
-        run: yes | sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android 16 SDK
+        run: yes | sdkmanager "platforms;android-36" "build-tools;35.0.0"
 
-      - name: Set up Gradle 8.11.1
+      - name: Set up Gradle 8.13
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: '8.13'
 
-      - name: Assemble and verify embedded Runtime
+      - name: Verify embedded Runtime
         working-directory: theree-ibaru-android
         run: |
           set -euo pipefail
@@ -49,11 +49,11 @@ jobs:
           echo "d4ed93c1245241251f26216d72e369e4785d1ea2475153c3642cb239ed88f9f7  /tmp/runtime_v09.zip" | sha256sum -c -
           unzip -t /tmp/runtime_v09.zip
 
-      - name: Build signed V2 release APK
+      - name: Build signed V3 release APK
         working-directory: theree-ibaru-android
         run: gradle --no-daemon :app:assembleRelease
 
-      - name: Verify V2 APK
+      - name: Verify V3 APK
         working-directory: theree-ibaru-android
         run: |
           set -euo pipefail
@@ -61,19 +61,19 @@ jobs:
           test -f "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -F "package: name='com.sinicablekaveh.thereeibaru.v2'" /tmp/badging.txt
-          grep -F "versionName='2.0'" /tmp/badging.txt
-          grep -F "targetSdkVersion:'35'" /tmp/badging.txt
+          grep -F "package: name='com.sinicablekaveh.thereeibaru.v3'" /tmp/badging.txt
+          grep -F "versionName='3.0'" /tmp/badging.txt
+          grep -F "targetSdkVersion:'36'" /tmp/badging.txt
           unzip -l "$APK" | grep -F 'classes.dex'
           unzip -l "$APK" | grep -F 'assets/runtime_v09.b64'
           mkdir -p dist
-          cp "$APK" dist/theree_ibaru_v2.0.apk
-          sha256sum dist/theree_ibaru_v2.0.apk > dist/SHA256SUMS.txt
+          cp "$APK" dist/theree_ibaru_v3.0.apk
+          sha256sum dist/theree_ibaru_v3.0.apk > dist/SHA256SUMS.txt
 
-      - name: Upload V2 APK artifact
+      - name: Upload V3 APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: theree-ibaru-v2-apk
+          name: theree-ibaru-v3-apk
           path: theree-ibaru-android/dist/
           if-no-files-found: error
           retention-days: 30
